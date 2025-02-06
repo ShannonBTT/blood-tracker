@@ -1,0 +1,74 @@
+You are an expert in Solidity, TypeScript, Node.js, React, Vite, Supabase, Shadcn UI, Radix UI, and Tailwind CSS.
+
+Project Context:
+  - The BloodTracker web app is built using Vite + React.
+  - It enables users (e.g., a cancer patient named Shanon) to track blood test results via a multi-step form, view test histories, and generate PDF reports.
+  - The app integrates with firebase. for secure user authentication and data storage.
+  - The UI must be mobile-first and fully responsive across mobile, tablet, and desktop devices.
+  - The design leverages Shadcn UI (with Tailwind CSS and Radix UI) for accessible, customizable, and consistent components.
+
+Key Principles
+  - Write concise, technical responses with accurate TypeScript examples.
+  - Use functional, declarative programming. Avoid classes.
+  - Prefer iteration and modularization over duplication.
+  - Use descriptive variable names with auxiliary verbs (e.g., isLoading).
+  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
+  - Favor named exports for components.
+  - Use the Receive an Object, Return an Object (RORO) pattern.
+
+JavaScript/TypeScript
+  - Use the "function" keyword for pure functions; omit semicolons.
+  - Write all code in TypeScript. Prefer interfaces over types; avoid enums—use maps instead.
+  - File structure: Exported component, subcomponents, helpers, static content, and types.
+  - Avoid unnecessary curly braces in conditionals.
+  - For single-line conditionals, omit curly braces.
+  - Use concise, one-line syntax for simple conditionals (e.g., if (condition) doSomething()).
+
+Error Handling and Validation
+  - Prioritize error handling and edge cases:
+      - Handle errors and edge cases at the beginning of functions.
+      - Use early returns to avoid deep nesting.
+      - Place the happy path last for improved readability.
+      - Avoid unnecessary else statements; use the if-return pattern.
+      - Use guard clauses for preconditions and invalid states.
+      - Implement proper error logging and provide user-friendly error messages.
+      - Consider custom error types or error factories for consistent error handling.
+
+React/Vite & UI/UX
+  - Use functional components with TypeScript interfaces.
+  - Write declarative JSX.
+  - Use function declarations (not const) for components.
+  - Leverage Shadcn UI, Radix UI, and Tailwind CSS for component styling and accessibility.
+  - Implement a mobile-first, responsive design:
+      - Use Tailwind CSS responsive utilities (breakpoints) to optimize layouts for mobile, tablet, and desktop.
+      - Ensure multi-step forms and PDF generation views are accessible and easy to use on all devices.
+  - Place static content and interface definitions at the file end.
+  - Use content variables for static content outside render functions.
+  - Minimize the use of 'use client', 'useEffect', and 'setState' where possible. Favor server components and efficient state management.
+  - Use Zod for form validation (e.g., for multi-step forms).
+  - Wrap client components in Suspense with a fallback.
+  - Use dynamic imports for non-critical components.
+  - Optimize assets:
+      - Serve images in WebP format with proper sizing and lazy loading.
+  - Model expected errors as return values rather than using try/catch for anticipated conditions.
+  - Implement error boundaries (e.g., error.tsx, global-error.tsx) to handle unexpected errors and provide fallback UIs.
+  - In the services/ directory, always throw user-friendly errors that can be caught and displayed (e.g., by TanStack Query).
+  - For server actions (if applicable), use type-safe approaches:
+      - Use next-safe-action (or equivalent) for server actions with proper validation.
+      - Define input schemas using Zod.
+      - Ensure all actions return a consistent ActionResponse type.
+      - Handle errors gracefully and return appropriate responses.
+  - Integrate with firebase:
+      - Use firebase for user authentication and data CRUD operations.
+      - Ensure secure data handling and proper session management.
+  - Implement PDF generation functionality that produces accessible, mobile-friendly reports.
+
+Key Conventions
+  1. Rely on Vite for fast builds, modular state changes, and code splitting.
+  2. Prioritize web vitals (LCP, CLS, FID) and mobile responsiveness.
+  3. Minimize the use of client-only code:
+       - Prefer server components and Vite’s efficient module system.
+       - Use 'use client' only when accessing Web APIs in small components.
+       - Avoid 'use client' for data fetching or state management whenever possible.
+
+Refer to Vite, React, and firebase documentation for best practices in Data Fetching, Rendering, and Routing.
