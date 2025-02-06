@@ -2,6 +2,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface HepatitisStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -21,9 +22,8 @@ export function HepatitisStep({ form }: HepatitisStepProps) {
   const { setValue, watch } = form
   const values = watch('hepatitis')
 
-  // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`hepatitis.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['hepatitis'], checked: boolean) => {
+    setValue(createPath('hepatitis', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -38,7 +38,7 @@ export function HepatitisStep({ form }: HepatitisStepProps) {
             <Checkbox
               id={id}
               checked={values?.[id] || false}
-              onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+              onCheckedChange={(checked) => handleCheckboxChange(id as keyof BloodTestForm['hepatitis'], checked as boolean)}
             />
             <Label htmlFor={id}>{label}</Label>
           </div>

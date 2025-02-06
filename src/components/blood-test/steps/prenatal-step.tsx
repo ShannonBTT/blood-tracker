@@ -2,6 +2,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface PrenatalStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -17,9 +18,8 @@ export function PrenatalStep({ form }: PrenatalStepProps) {
   const { setValue, watch } = form
   const values = watch('prenatal')
 
-  // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`prenatal.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['prenatal'], checked: boolean) => {
+    setValue(createPath('prenatal', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -34,7 +34,7 @@ export function PrenatalStep({ form }: PrenatalStepProps) {
             <Checkbox
               id={id}
               checked={values?.[id] || false}
-              onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+              onCheckedChange={(checked) => handleCheckboxChange(id as keyof BloodTestForm['prenatal'], checked as boolean)}
             />
             <Label htmlFor={id}>{label}</Label>
           </div>

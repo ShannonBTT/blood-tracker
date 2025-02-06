@@ -13,13 +13,13 @@ import {
 } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAoqfXMz1X-ETJXoP1SQMrW9dUDAbu8eGg",
-  authDomain: "shannonbt-54813.firebaseapp.com",
-  projectId: "shannonbt-54813",
-  storageBucket: "shannonbt-54813.appspot.com",
-  messagingSenderId: "453157265028",
-  appId: "1:453157265028:web:d61e601c20fe0c4c7bacd1",
-  measurementId: "G-Y1MKM6GMD1"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 }
 
 // Initialize Firebase
@@ -28,7 +28,9 @@ export const analytics = getAnalytics(app)
 export const auth = getAuth(app)
 
 // Initialize Firestore with settings for better offline support
-export const db = getFirestore(app)
+export const db = initializeFirestore(app, {
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED
+})
 
 // Enable offline persistence with better error handling
 try {

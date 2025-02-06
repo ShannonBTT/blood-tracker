@@ -2,6 +2,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface HematologyStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -20,9 +21,8 @@ export function HematologyStep({ form }: HematologyStepProps) {
   const { setValue, watch } = form
   const values = watch('hematology')
 
-  // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`hematology.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['hematology'], checked: boolean) => {
+    setValue(createPath('hematology', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -37,7 +37,7 @@ export function HematologyStep({ form }: HematologyStepProps) {
             <Checkbox
               id={id}
               checked={values?.[id] || false}
-              onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+              onCheckedChange={(checked) => handleCheckboxChange(id as keyof BloodTestForm['hematology'], checked as boolean)}
             />
             <Label htmlFor={id}>{label}</Label>
           </div>

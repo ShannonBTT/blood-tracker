@@ -61,6 +61,7 @@ const defaultValues: BloodTestForm = {
     siro: false,
   },
   hematology: {
+    cbc: false,
     cbcDiff: false,
     reticulocyteCount: false,
     dDimer: false,
@@ -174,7 +175,7 @@ const defaultValues: BloodTestForm = {
   },
 }
 
-export function NewBloodTestPage() {
+export function NewTest() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [currentStep, setCurrentStep] = useState<number>(0)

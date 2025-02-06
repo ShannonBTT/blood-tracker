@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface TherapeuticDrugsStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -22,12 +23,11 @@ const THERAPEUTIC_DRUGS_OPTIONS = [
 ] as const
 
 export function TherapeuticDrugsStep({ form }: TherapeuticDrugsStepProps) {
-  const { setValue, watch } = form
+  const { setValue, watch, register } = form
   const values = watch('therapeuticDrugs')
 
-  // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`therapeuticDrugs.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['therapeuticDrugs'], checked: boolean) => {
+    setValue(createPath('therapeuticDrugs', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -42,7 +42,7 @@ export function TherapeuticDrugsStep({ form }: TherapeuticDrugsStepProps) {
             <Checkbox
               id={id}
               checked={values?.[id] || false}
-              onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+              onCheckedChange={(checked) => handleCheckboxChange(id as keyof BloodTestForm['therapeuticDrugs'], checked as boolean)}
             />
             <Label htmlFor={id}>{label}</Label>
           </div>
@@ -54,7 +54,7 @@ export function TherapeuticDrugsStep({ form }: TherapeuticDrugsStepProps) {
           <Label htmlFor="dosage">Dosage</Label>
           <Input
             id="dosage"
-            {...form.register('therapeuticDrugs.dosage')}
+            {...register('therapeuticDrugs.dosage')}
             placeholder="Enter drug dosage"
           />
         </div>
@@ -64,7 +64,7 @@ export function TherapeuticDrugsStep({ form }: TherapeuticDrugsStepProps) {
           <Input
             id="dateTime"
             type="datetime-local"
-            {...form.register('therapeuticDrugs.dateTime')}
+            {...register('therapeuticDrugs.dateTime')}
           />
         </div>
       </div>

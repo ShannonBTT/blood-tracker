@@ -2,20 +2,18 @@ import { UseFormReturn } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface BiochemistryStepProps {
   form: UseFormReturn<BloodTestForm>
 }
 
-const BIOCHEMISTRY_OPTIONS = [
-  // Minerals and Electrolytes
+const BIOCHEMISTRY_TESTS = [
   { id: 'alb', label: 'Albumin', category: 'Proteins and Enzymes' },
   { id: 'ca', label: 'Calcium', category: 'Minerals' },
   { id: 'phos', label: 'Phosphate', category: 'Minerals' },
   { id: 'mg', label: 'Magnesium', category: 'Minerals' },
   { id: 'uric', label: 'Uric Acid', category: 'Metabolites' },
-
-  // Enzymes
   { id: 'alp', label: 'Alkaline Phosphatase', category: 'Enzymes' },
   { id: 'alt', label: 'Alanine Aminotransferase', category: 'Enzymes' },
   { id: 'ast', label: 'Aspartate Aminotransferase', category: 'Enzymes' },
@@ -23,77 +21,64 @@ const BIOCHEMISTRY_OPTIONS = [
   { id: 'ld', label: 'Lactate Dehydrogenase', category: 'Enzymes' },
   { id: 'lip', label: 'Lipase', category: 'Enzymes' },
   { id: 'ggt', label: 'Gamma Glutamyltransferase', category: 'Enzymes' },
-
-  // Bilirubin
-  { id: 'bilt', label: 'Bilirubin - Total', category: 'Liver Function' },
-  { id: 'bilfr', label: 'Bilirubin - Fractionation', category: 'Liver Function' },
-
-  // Hormones and Proteins
+  { id: 'bilt', label: 'Bilirubin - Total', category: 'Metabolites' },
+  { id: 'bilfr', label: 'Bilirubin - Fractionation', category: 'Metabolites' },
   { id: 'bhcg', label: 'BHCG (Quantitative - Level)', category: 'Hormones' },
-  { id: 'ironb', label: 'Iron and Total Iron Binding Capacity', category: 'Iron Studies' },
-  { id: 'fer', label: 'Ferritin', category: 'Iron Studies' },
+  { id: 'ironb', label: 'Iron and Total Iron Binding Capacity', category: 'Minerals' },
+  { id: 'fer', label: 'Ferritin', category: 'Proteins' },
   { id: 'psa', label: 'Prostate Specific Antigen', category: 'Tumor Markers' },
-  { id: 'thysa', label: 'Thyroid Stimulating Hormone', category: 'Thyroid Function' },
-  { id: 'frt4', label: 'Free T4 (Free Thyroxine)', category: 'Thyroid Function' },
-  { id: 'atpa', label: 'Thyroid Peroxidase Antibody', category: 'Thyroid Function' },
-
-  // Reproductive Hormones
-  { id: 'fshlh', label: 'Follicle Stimulating Hormone/Luteinizing Hormone', category: 'Reproductive' },
-  { id: 'ediol', label: 'Estradiol', category: 'Reproductive' },
-  { id: 'prge', label: 'Progesterone', category: 'Reproductive' },
-  { id: 'prl', label: 'Prolactin', category: 'Reproductive' },
-
-  // Infectious Disease and Inflammation
-  { id: 'waser', label: 'Syphilis', category: 'Infectious Disease' },
-  { id: 'hiv', label: 'HIV', category: 'Infectious Disease' },
+  { id: 'thysa', label: 'Thyroid Stimulating Hormone', category: 'Hormones' },
+  { id: 'frt4', label: 'Free T4 (Free Thyroxine)', category: 'Hormones' },
+  { id: 'atpa', label: 'Thyroid Peroxidase Antibody', category: 'Immunology' },
+  { id: 'fshlh', label: 'Follicle Stimulating Hormone/Luteinizing Hormone', category: 'Hormones' },
+  { id: 'ediol', label: 'Estradiol', category: 'Hormones' },
+  { id: 'prge', label: 'Progesterone', category: 'Hormones' },
+  { id: 'prl', label: 'Prolactin', category: 'Hormones' },
+  { id: 'waser', label: 'Syphilis', category: 'Serology' },
+  { id: 'hiv', label: 'HIV', category: 'Serology' },
   { id: 'crph', label: 'C-Reactive Protein-HS', category: 'Inflammation' },
-  { id: 'rhf', label: 'Rheumatoid Factor', category: 'Inflammation' },
+  { id: 'rhf', label: 'Rheumatoid Factor', category: 'Immunology' },
   { id: 'tnths', label: 'Troponin T HS', category: 'Cardiac' },
-
-  // Proteins
   { id: 'tp', label: 'Total Protein', category: 'Proteins' },
   { id: 'pes', label: 'Serum Protein Electrophoresis', category: 'Proteins' },
-
-  // Stool Tests
-  { id: 'fitOccult', label: 'Stool for Fecal immunochemical test (Occult Blood)', category: 'Stool Tests' },
+  { id: 'fitOccult', label: 'Fecal Immunochemical Test (FIT) for Occult Blood', category: 'Screening' }
 ] as const
-
-// Group options by category
-const groupedOptions = BIOCHEMISTRY_OPTIONS.reduce((acc, option) => {
-  if (!acc[option.category]) {
-    acc[option.category] = []
-  }
-  acc[option.category].push(option)
-  return acc
-}, {} as Record<string, typeof BIOCHEMISTRY_OPTIONS>)
 
 export function BiochemistryStep({ form }: BiochemistryStepProps) {
   const { setValue, watch } = form
   const values = watch('biochemistry')
 
-  // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`biochemistry.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['biochemistry'], checked: boolean) => {
+    setValue(createPath('biochemistry', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
     })
   }
 
+  // Group tests by category
+  const groupedTests = BIOCHEMISTRY_TESTS.reduce((acc, test) => {
+    if (!acc[test.category]) {
+      acc[test.category] = []
+    }
+    acc[test.category].push(test)
+    return acc
+  }, {} as Record<string, typeof BIOCHEMISTRY_TESTS[number][]>)
+
   return (
-    <div className="space-y-8">
-      {Object.entries(groupedOptions).map(([category, options]) => (
+    <div className="space-y-6">
+      {Object.entries(groupedTests).map(([category, tests]) => (
         <div key={category} className="space-y-4">
           <h3 className="font-medium text-lg">{category}</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {options.map(({ id, label }) => (
-              <div key={id} className="flex items-center space-x-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tests.map((test) => (
+              <div key={test.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={id}
-                  checked={values?.[id] || false}
-                  onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+                  id={test.id}
+                  checked={values?.[test.id] || false}
+                  onCheckedChange={(checked) => handleCheckboxChange(test.id as keyof BloodTestForm['biochemistry'], checked as boolean)}
                 />
-                <Label htmlFor={id}>{label}</Label>
+                <Label htmlFor={test.id}>{test.label}</Label>
               </div>
             ))}
           </div>

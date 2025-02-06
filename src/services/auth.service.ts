@@ -1,35 +1,26 @@
-import { supabase } from '@/lib/supabase'
-import type { AuthFormData } from '@/types/auth'
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+  type User
+} from 'firebase/auth'
+import { auth } from '@/lib/firebase'
 
-export async function signIn({ email, password }: AuthFormData) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) throw new Error(error.message)
-  return data
+export async function signIn(email: string, password: string): Promise<User> {
+  const { user } = await signInWithEmailAndPassword(auth, email, password)
+  return user
 }
 
-export async function signUp({ email, password }: AuthFormData) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
-
-  if (error) throw new Error(error.message)
-  return data
+export async function signUp(email: string, password: string): Promise<User> {
+  const { user } = await createUserWithEmailAndPassword(auth, email, password)
+  return user
 }
 
-export async function signOut() {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw new Error(error.message)
+export async function logout(): Promise<void> {
+  await signOut(auth)
 }
 
-export async function resetPassword(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
-  })
-
-  if (error) throw new Error(error.message)
+export async function resetPassword(email: string): Promise<void> {
+  await sendPasswordResetEmail(auth, email)
 } 

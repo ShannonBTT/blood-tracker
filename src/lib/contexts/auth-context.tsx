@@ -21,28 +21,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    console.log('🔄 Initialisation du contexte d\'authentification')
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('👤 Changement d\'état d\'authentification:', user ? 'Connecté' : 'Non connecté')
+      if (user) {
+        console.log('✅ Utilisateur connecté:', user.uid)
+      }
       setUser(user)
       setIsLoading(false)
     })
 
-    return () => unsubscribe()
+    return () => {
+      console.log('🔄 Nettoyage du listener d\'authentification')
+      unsubscribe()
+    }
   }, [])
 
   const signIn = async (email: string, password: string) => {
+    console.log('🔑 Tentative de connexion...')
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      console.log('✅ Connexion réussie:', result.user.uid)
     } catch (error) {
-      console.error('Error signing in:', error)
+      console.error('❌ Erreur de connexion:', error)
       throw error
     }
   }
 
   const signOut = async () => {
+    console.log('🚪 Tentative de déconnexion...')
     try {
       await firebaseSignOut(auth)
+      console.log('✅ Déconnexion réussie')
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error('❌ Erreur de déconnexion:', error)
       throw error
     }
   }

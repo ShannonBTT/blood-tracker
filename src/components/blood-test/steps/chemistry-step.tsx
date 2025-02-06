@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface ChemistryStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -23,8 +24,8 @@ export function ChemistryStep({ form }: ChemistryStepProps) {
   const values = watch('chemistry')
 
   // Handle checkbox change
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`chemistry.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['chemistry'], checked: boolean) => {
+    setValue(createPath('chemistry', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -39,7 +40,7 @@ export function ChemistryStep({ form }: ChemistryStepProps) {
             <Checkbox
               id={id}
               checked={values?.[id] || false}
-              onCheckedChange={(checked) => handleCheckboxChange(id, checked as boolean)}
+              onCheckedChange={(checked) => handleCheckboxChange(id as keyof BloodTestForm['chemistry'], checked as boolean)}
             />
             <Label htmlFor={id}>{label}</Label>
           </div>

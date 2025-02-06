@@ -176,59 +176,46 @@ export async function getBloodTest(id: string) {
 }
 
 export async function getBloodTests(userId: string) {
-  if (!userId) throw new Error('User ID is required')
+  console.log('🔍 Démarrage de getBloodTests pour userId:', userId)
+  
+  if (!userId) {
+    console.error('❌ Erreur: userId est requis')
+    throw new Error('User ID is required')
+  }
 
   try {
-    console.log('🔍 Fetching blood tests for user:', userId)
+    console.log('📁 Accès à la collection:', COLLECTION)
     const bloodTestsRef = collection(db, COLLECTION)
+    
+    console.log('🔍 Création de la requête avec les filtres...')
     const q = query(
       bloodTestsRef,
       where('userId', '==', userId),
       orderBy('createdAt', 'desc')
     )
     
+    console.log('⏳ Exécution de la requête...')
     const querySnapshot = await getDocs(q)
-    console.log(`✅ Found ${querySnapshot.docs.length} blood tests`)
+    console.log(`✅ ${querySnapshot.docs.length} documents trouvés`)
     
-    return querySnapshot.docs.map(doc => {
+    const tests = querySnapshot.docs.map(doc => {
       const data = doc.data()
-
-      const transformedData = {
+      console.log('📄 Document trouvé:', doc.id, data)
+      
+      return {
         id: doc.id,
         userId: data.userId,
         createdAt: data.createdAt?.toDate().toISOString(),
         updatedAt: data.updatedAt?.toDate().toISOString(),
         status: data.status,
-        // Spread the form data but ensure microbiology data is properly structured
-        ...data.formData,
-        // Explicitly transform microbiology data to ensure all fields are present
-        microbiology: {
-          bloodCultureCAndS: data.formData?.microbiology?.bloodCultureCAndS || false,
-          cervixSwabGC: data.formData?.microbiology?.cervixSwabGC || false,
-          sputumCAndS: data.formData?.microbiology?.sputumCAndS || false,
-          sputumTBAfb: data.formData?.microbiology?.sputumTBAfb || false,
-          stoolCAndS: data.formData?.microbiology?.stoolCAndS || false,
-          stoolOAndP: data.formData?.microbiology?.stoolOAndP || false,
-          stoolCDiff: data.formData?.microbiology?.stoolCDiff || false,
-          throatCAndS: data.formData?.microbiology?.throatCAndS || false,
-          urethralSwabGC: data.formData?.microbiology?.urethralSwabGC || false,
-          urineCatheterCAndS: data.formData?.microbiology?.urineCatheterCAndS || false,
-          urineCatheterYeast: data.formData?.microbiology?.urineCatheterYeast || false,
-          urineMidstreamCAndS: data.formData?.microbiology?.urineMidstreamCAndS || false,
-          urineMidstreamYeast: data.formData?.microbiology?.urineMidstreamYeast || false,
-          vaginalBV: data.formData?.microbiology?.vaginalBV || false,
-          vaginalTrich: data.formData?.microbiology?.vaginalTrich || false,
-          groupBStrep: data.formData?.microbiology?.groupBStrep || false,
-          source: data.formData?.microbiology?.source || '',
-          source2: data.formData?.microbiology?.source2 || '',
-          otherTests: data.formData?.microbiology?.otherTests || ''
-        }
+        ...data.formData
       }
-
-      return transformedData
     })
+    
+    console.log('✅ Données transformées avec succès:', tests.length, 'tests')
+    return tests
   } catch (error) {
-    console.error('❌ Error fetching blood tests:', error)
+    console.error('❌ Erreur lors de la récupération des tests:', error)
     throw new Error(`Failed to fetch blood tests: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

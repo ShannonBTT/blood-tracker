@@ -57,18 +57,30 @@ export function BloodTestHistory({ onCountChange }: BloodTestHistoryProps) {
 
   useEffect(() => {
     async function loadTests() {
-      if (!user) return
+      console.log('🔄 Démarrage du chargement des tests')
+      console.log('👤 État de l\'utilisateur:', user ? 'Connecté' : 'Non connecté')
+      
+      if (!user) {
+        console.warn('⚠️ Pas d\'utilisateur connecté, arrêt du chargement')
+        setIsLoading(false)
+        return
+      }
 
       try {
+        console.log('⏳ Début de la récupération des tests...')
         setIsLoading(true)
         setError(null)
+        
         const data = await getBloodTests(user.uid)
+        console.log('✅ Tests récupérés avec succès:', data.length, 'tests')
+        
         setTests(data)
         onCountChange?.(data.length)
       } catch (err) {
-        console.error('Failed to load blood tests:', err)
+        console.error('❌ Erreur lors du chargement des tests:', err)
         setError('Failed to load blood tests. Please try again later.')
       } finally {
+        console.log('🏁 Fin du chargement des tests')
         setIsLoading(false)
       }
     }

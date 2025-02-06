@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface MicrobiologyStepProps {
   form: UseFormReturn<BloodTestForm>
@@ -12,8 +13,8 @@ export function MicrobiologyStep({ form }: MicrobiologyStepProps) {
   const { setValue, watch, register } = form
   const values = watch('microbiology')
 
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    setValue(`microbiology.${id}`, checked, {
+  const handleCheckboxChange = (id: keyof BloodTestForm['microbiology'], checked: boolean) => {
+    setValue(createPath('microbiology', id), checked, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,

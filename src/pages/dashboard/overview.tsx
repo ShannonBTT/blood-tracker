@@ -14,7 +14,7 @@ import { getBloodTests } from '@/lib/firebase/blood-tests'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { BloodTestWithMeta } from '@/types/blood-test-form'
 
-export function DashboardOverview() {
+export function Overview() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [recentTests, setRecentTests] = useState<BloodTestWithMeta[]>([])
