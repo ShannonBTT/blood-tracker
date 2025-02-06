@@ -139,12 +139,14 @@ const TEST_LABELS = {
 } as const
 
 // Helper function to get selected options with labels
-function getSelectedOptions(values: Record<string, boolean>, labels: Record<string, string>) {
-  return Object.entries(values)
-    .filter(([key, value]) => value && key !== 'weight' && key !== 'height')
-    .map(([key]) => ({
+function getSelectedOptions(values: Record<string, any>, labels: Record<string, string>) {
+  if (!values || !labels) return []
+  
+  return Object.entries(labels)
+    .filter(([key]) => values[key] === true)
+    .map(([key, label]) => ({
       key,
-      label: labels[key] || key
+      label: label || key
     }))
 }
 

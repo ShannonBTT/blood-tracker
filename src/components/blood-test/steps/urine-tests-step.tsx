@@ -4,31 +4,35 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
 import { createPath } from '@/lib/utils/form-paths'
+import type { CheckedState } from '@radix-ui/react-checkbox'
 
 interface UrineTestsStepProps {
   form: UseFormReturn<BloodTestForm>
 }
 
+type UrineTestId = keyof BloodTestForm['urineTests']
+type UrineCollectionId = Exclude<keyof BloodTestForm['urineCollection'], 'startDate' | 'startTime' | 'endDate' | 'endTime' | 'height' | 'weight'>
+
 const URINE_TESTS = [
-  { id: 'ua', label: 'Voided Urinalysis', section: 'urineTests' },
-  { id: 'catheterizedUrinalysis', label: 'Catheterized Urinalysis', section: 'urineTests' },
-  { id: 'hcgu', label: 'HCG - Urine', section: 'urineTests' },
-  { id: 'clgp', label: 'Urine for Chlamydia and G.C. - First stream', section: 'urineTests' },
-  { id: 'albcr', label: 'Random Albumin/Creatinine Ratio (Microalbumin)', section: 'urineTests' },
-] as const
+  { id: 'ua' as const, label: 'Voided Urinalysis', section: 'urineTests' as const },
+  { id: 'catheterizedUrinalysis' as const, label: 'Catheterized Urinalysis', section: 'urineTests' as const },
+  { id: 'hcgu' as const, label: 'HCG - Urine', section: 'urineTests' as const },
+  { id: 'clgp' as const, label: 'Urine for Chlamydia and G.C. - First stream', section: 'urineTests' as const },
+  { id: 'albcr' as const, label: 'Random Albumin/Creatinine Ratio (Microalbumin)', section: 'urineTests' as const },
+]
 
 const URINE_COLLECTION = [
-  { id: 'caud', label: 'Calcium', section: 'urineCollection' },
-  { id: 'creud', label: 'Creatinine', section: 'urineCollection' },
-  { id: 'crcl', label: 'Creatinine Clearance', section: 'urineCollection' },
-  { id: 'crclc', label: 'Creatinine Clearance (BSA Corrected)', section: 'urineCollection' },
-  { id: 'po4ud', label: 'Phosphate', section: 'urineCollection' },
-  { id: 'tpud', label: 'Protein', section: 'urineCollection' },
-  { id: 'peu', label: 'Protein Electrophoresis', section: 'urineCollection' },
-  { id: 'nakud', label: 'Sodium / Potassium', section: 'urineCollection' },
-  { id: 'ureud', label: 'Urea', section: 'urineCollection' },
-  { id: 'uraud', label: 'Uric Acid', section: 'urineCollection' },
-] as const
+  { id: 'caud' as const, label: 'Calcium', section: 'urineCollection' as const },
+  { id: 'creud' as const, label: 'Creatinine', section: 'urineCollection' as const },
+  { id: 'crcl' as const, label: 'Creatinine Clearance', section: 'urineCollection' as const },
+  { id: 'crclc' as const, label: 'Creatinine Clearance (BSA Corrected)', section: 'urineCollection' as const },
+  { id: 'po4ud' as const, label: 'Phosphate', section: 'urineCollection' as const },
+  { id: 'tpud' as const, label: 'Protein', section: 'urineCollection' as const },
+  { id: 'peu' as const, label: 'Protein Electrophoresis', section: 'urineCollection' as const },
+  { id: 'nakud' as const, label: 'Sodium / Potassium', section: 'urineCollection' as const },
+  { id: 'ureud' as const, label: 'Urea', section: 'urineCollection' as const },
+  { id: 'uraud' as const, label: 'Uric Acid', section: 'urineCollection' as const },
+]
 
 export function UrineTestsStep({ form }: UrineTestsStepProps) {
   const { register, watch, setValue } = form
@@ -45,8 +49,16 @@ export function UrineTestsStep({ form }: UrineTestsStepProps) {
     ([key, value]) => key !== 'startDate' && key !== 'startTime' && key !== 'endDate' && key !== 'endTime' && value === true
   )
 
-  const handleCheckboxChange = (section: 'urineTests' | 'urineCollection', id: string, checked: boolean) => {
-    setValue(createPath(section, id as any), checked, {
+  const handleUrineTestChange = (id: UrineTestId, checked: CheckedState) => {
+    setValue(`urineTests.${id}`, checked === true, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    })
+  }
+
+  const handleCollectionTestChange = (id: UrineCollectionId, checked: CheckedState) => {
+    setValue(`urineCollection.${id}`, checked === true, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -59,12 +71,12 @@ export function UrineTestsStep({ form }: UrineTestsStepProps) {
       <div className="space-y-4">
         <h3 className="font-medium text-lg">Basic Urine Tests</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          {URINE_TESTS.map(({ id, label, section }) => (
+          {URINE_TESTS.map(({ id, label }) => (
             <div key={id} className="flex items-center space-x-2">
               <Checkbox
                 id={id}
-                checked={urineTests?.[id as keyof typeof urineTests] || false}
-                onCheckedChange={(checked) => handleCheckboxChange(section, id, checked as boolean)}
+                checked={urineTests?.[id] || false}
+                onCheckedChange={(checked) => handleUrineTestChange(id, checked)}
               />
               <Label htmlFor={id}>{label}</Label>
             </div>
@@ -114,12 +126,12 @@ export function UrineTestsStep({ form }: UrineTestsStepProps) {
 
         {/* Collection Tests */}
         <div className="grid gap-4 sm:grid-cols-2">
-          {URINE_COLLECTION.map(({ id, label, section }) => (
+          {URINE_COLLECTION.map(({ id, label }) => (
             <div key={id} className="flex items-center space-x-2">
               <Checkbox
                 id={id}
-                checked={urineCollection?.[id as keyof typeof urineCollection] || false}
-                onCheckedChange={(checked) => handleCheckboxChange(section, id, checked as boolean)}
+                checked={urineCollection?.[id] || false}
+                onCheckedChange={(checked) => handleCollectionTestChange(id, checked)}
               />
               <Label htmlFor={id}>{label}</Label>
             </div>

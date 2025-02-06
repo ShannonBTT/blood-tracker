@@ -32,23 +32,27 @@ export const db = initializeFirestore(app, {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED
 })
 
-// Enable offline persistence with better error handling
-try {
-  await enableIndexedDbPersistence(db, {
+// Enable offline persistence
+function initializeOfflinePersistence() {
+  enableIndexedDbPersistence(db, {
     forceOwnership: true
-  })
-  console.log('✅ Offline persistence enabled successfully')
-} catch (err: unknown) {
-  if (err && typeof err === 'object' && 'code' in err) {
-    if (err.code === 'failed-precondition') {
-      console.warn('⚠️ Multiple tabs open, persistence only enabled in one tab')
-    } else if (err.code === 'unimplemented') {
-      console.warn('⚠️ Current browser doesn\'t support persistence')
+  }).then(() => {
+    console.log('✅ Offline persistence enabled successfully')
+  }).catch((err: unknown) => {
+    if (err && typeof err === 'object' && 'code' in err) {
+      if (err.code === 'failed-precondition') {
+        console.warn('⚠️ Multiple tabs open, persistence only enabled in one tab')
+      } else if (err.code === 'unimplemented') {
+        console.warn('⚠️ Current browser doesn\'t support persistence')
+      }
+    } else {
+      console.error('❌ Error enabling persistence:', err)
     }
-  } else {
-    console.error('❌ Error enabling persistence:', err)
-  }
+  })
 }
+
+// Initialize offline persistence
+initializeOfflinePersistence()
 
 // Test Firebase connection with better error handling
 export async function testFirebaseConnection() {

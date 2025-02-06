@@ -203,4 +203,25 @@ export interface BloodTest extends Omit<BloodTestForm, 'patientInfo' | 'requesti
   physician_last_name: string
   created_at: string
   status: 'draft' | 'completed'
+}
+
+export interface BloodTestWithMeta extends BloodTestForm {
+  id: string
+  userId: string
+  createdAt: string
+  updatedAt: string
+  status: 'draft' | 'completed' | 'archived'
+}
+
+export interface TestResults {
+  whiteBloodCells: number
+  redBloodCells: number
+  hemoglobin: number
+  hematocrit: number
+  platelets: number
+  glucose: number
+  creatinine: number
+  sodium: number
+  potassium: number
+  chloride: number
 } 
