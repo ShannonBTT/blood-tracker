@@ -3,55 +3,53 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { BloodTestForm } from '@/types/blood-test-form'
+import { createPath } from '@/lib/utils/form-paths'
 
 interface UrineTestsStepProps {
   form: UseFormReturn<BloodTestForm>
 }
 
-const URINE_TEST_OPTIONS = [
-  { id: 'ua', label: 'Voided Urinalysis', category: 'Basic' },
-  { id: 'catheterizedUrinalysis', label: 'Catheterized Urinalysis', category: 'Basic' },
-  { id: 'hcgu', label: 'HCG - Urine', category: 'Basic' },
-  { id: 'clgp', label: 'Urine for Chlamydia and G.C. - First stream', category: 'Basic' },
-  { id: 'albcr', label: 'Random Albumin/Creatinine Ratio (Microalbumin)', category: 'Basic' },
+const URINE_TESTS = [
+  { id: 'ua', label: 'Voided Urinalysis', section: 'urineTests' },
+  { id: 'catheterizedUrinalysis', label: 'Catheterized Urinalysis', section: 'urineTests' },
+  { id: 'hcgu', label: 'HCG - Urine', section: 'urineTests' },
+  { id: 'clgp', label: 'Urine for Chlamydia and G.C. - First stream', section: 'urineTests' },
+  { id: 'albcr', label: 'Random Albumin/Creatinine Ratio (Microalbumin)', section: 'urineTests' },
 ] as const
 
-const URINE_COLLECTION_OPTIONS = [
-  { id: 'caud', label: 'Calcium', category: 'Collection' },
-  { id: 'creud', label: 'Creatinine', category: 'Collection' },
-  { id: 'crcl', label: 'Creatinine Clearance', category: 'Collection' },
-  { id: 'crclc', label: 'Creatinine Clearance (BSA Corrected)', category: 'Collection' },
-  { id: 'po4ud', label: 'Phosphate', category: 'Collection' },
-  { id: 'tpud', label: 'Protein', category: 'Collection' },
-  { id: 'peu', label: 'Protein Electrophoresis', category: 'Collection' },
-  { id: 'nakud', label: 'Sodium / Potassium', category: 'Collection' },
-  { id: 'ureud', label: 'Urea', category: 'Collection' },
-  { id: 'uraud', label: 'Uric Acid', category: 'Collection' },
+const URINE_COLLECTION = [
+  { id: 'caud', label: 'Calcium', section: 'urineCollection' },
+  { id: 'creud', label: 'Creatinine', section: 'urineCollection' },
+  { id: 'crcl', label: 'Creatinine Clearance', section: 'urineCollection' },
+  { id: 'crclc', label: 'Creatinine Clearance (BSA Corrected)', section: 'urineCollection' },
+  { id: 'po4ud', label: 'Phosphate', section: 'urineCollection' },
+  { id: 'tpud', label: 'Protein', section: 'urineCollection' },
+  { id: 'peu', label: 'Protein Electrophoresis', section: 'urineCollection' },
+  { id: 'nakud', label: 'Sodium / Potassium', section: 'urineCollection' },
+  { id: 'ureud', label: 'Urea', section: 'urineCollection' },
+  { id: 'uraud', label: 'Uric Acid', section: 'urineCollection' },
 ] as const
 
 export function UrineTestsStep({ form }: UrineTestsStepProps) {
   const { register, watch, setValue } = form
-  const formValues = watch()
+  const urineTests = watch('urineTests')
+  const urineCollection = watch('urineCollection')
   
   // Debug log current form values
   console.log('🧪 Current urine test values:', {
-    urineTests: formValues.urineTests,
-    urineCollection: formValues.urineCollection
+    urineTests: urineTests,
+    urineCollection: urineCollection
   })
 
-  const hasCollectionTests = Object.entries(watch('urineCollection')).some(
+  const hasCollectionTests = Object.entries(urineCollection).some(
     ([key, value]) => key !== 'startDate' && key !== 'startTime' && key !== 'endDate' && key !== 'endTime' && value === true
   )
 
-  const handleCheckboxChange = (section: 'urineTests' | 'urineCollection', id: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(`${section}.${id}`, e.target.checked)
-    
-    // Debug log after change
-    const updatedValues = watch()
-    console.log(`🧪 Updated ${section}.${id} to:`, e.target.checked)
-    console.log('🧪 Form values after update:', {
-      urineTests: updatedValues.urineTests,
-      urineCollection: updatedValues.urineCollection
+  const handleCheckboxChange = (section: 'urineTests' | 'urineCollection', id: string, checked: boolean) => {
+    setValue(createPath(section, id as any), checked, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
     })
   }
 
@@ -61,21 +59,12 @@ export function UrineTestsStep({ form }: UrineTestsStepProps) {
       <div className="space-y-4">
         <h3 className="font-medium text-lg">Basic Urine Tests</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          {URINE_TEST_OPTIONS.map(({ id, label }) => (
+          {URINE_TESTS.map(({ id, label, section }) => (
             <div key={id} className="flex items-center space-x-2">
               <Checkbox
                 id={id}
-                checked={formValues.urineTests[id]}
-                onCheckedChange={(checked) => {
-                  setValue(`urineTests.${id}`, checked === true)
-                  // Debug log after change
-                  const updatedValues = watch()
-                  console.log(`🧪 Updated urineTests.${id} to:`, checked)
-                  console.log('🧪 Form values after update:', {
-                    urineTests: updatedValues.urineTests,
-                    urineCollection: updatedValues.urineCollection
-                  })
-                }}
+                checked={urineTests?.[id as keyof typeof urineTests] || false}
+                onCheckedChange={(checked) => handleCheckboxChange(section, id, checked as boolean)}
               />
               <Label htmlFor={id}>{label}</Label>
             </div>
@@ -125,53 +114,14 @@ export function UrineTestsStep({ form }: UrineTestsStepProps) {
 
         {/* Collection Tests */}
         <div className="grid gap-4 sm:grid-cols-2">
-          {URINE_COLLECTION_OPTIONS.map(({ id, label }) => (
-            <div key={id}>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={id}
-                  checked={formValues.urineCollection[id]}
-                  onCheckedChange={(checked) => {
-                    setValue(`urineCollection.${id}`, checked === true)
-                    // Debug log after change
-                    const updatedValues = watch()
-                    console.log(`🧪 Updated urineCollection.${id} to:`, checked)
-                    console.log('🧪 Form values after update:', {
-                      urineTests: updatedValues.urineTests,
-                      urineCollection: updatedValues.urineCollection
-                    })
-                  }}
-                />
-                <Label htmlFor={id}>{label}</Label>
-              </div>
-              
-              {/* BSA Fields */}
-              {id === 'crclc' && formValues.urineCollection.crclc && (
-                <div className="mt-2 ml-6 p-3 border rounded-md bg-muted/50">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="height">HT (cm)</Label>
-                      <Input
-                        id="height"
-                        type="number"
-                        step="0.1"
-                        {...register('urineCollection.height')}
-                        placeholder="Enter height"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="weight">WT (kg)</Label>
-                      <Input
-                        id="weight"
-                        type="number"
-                        step="0.1"
-                        {...register('urineCollection.weight')}
-                        placeholder="Enter weight"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+          {URINE_COLLECTION.map(({ id, label, section }) => (
+            <div key={id} className="flex items-center space-x-2">
+              <Checkbox
+                id={id}
+                checked={urineCollection?.[id as keyof typeof urineCollection] || false}
+                onCheckedChange={(checked) => handleCheckboxChange(section, id, checked as boolean)}
+              />
+              <Label htmlFor={id}>{label}</Label>
             </div>
           ))}
         </div>

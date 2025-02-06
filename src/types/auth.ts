@@ -1,4 +1,4 @@
-import type { User } from 'firebase/auth'
+import type { User as FirebaseUser } from 'firebase/auth'
 
 export interface AuthFormData {
   email: string
@@ -11,12 +11,12 @@ export interface AuthError {
 }
 
 export interface AuthContextType {
-  user: User | null
+  user: FirebaseUser | null
   loading: boolean
   error: Error | null
 }
 
-export interface User {
+export interface UserProfile {
   id: string
   email: string
   createdAt: string
